@@ -6,7 +6,7 @@ import { ellipsisVertical } from 'ionicons/icons'
 <template>
   <ion-header>
     <ion-toolbar style="--ion-title-text-align: start;">
-
+      <ion-title>Simbase</ion-title>
       <ion-buttons slot="start">
         <ion-button>
           <img
