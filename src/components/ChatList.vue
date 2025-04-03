@@ -1,11 +1,10 @@
 <template>
   <div class="chat-list-container">
-    <ul class="chat-list">
-      <li
+    <div class="chat-list">
+      <div
           v-for="chat in chats"
           :key="chat.id"
           class="chat-item"
-          @click.stop="onSelectChat(chat.id)"
       >
         <img :src="chat.avatar" alt="avatar" class="chat-item-avatar" />
         <div class="chat-item-info">
@@ -13,8 +12,8 @@
           <div class="chat-item-lastMessage">{{ chat.lastMessage }}</div>
         </div>
         <div class="chat-item-time">{{ chat.lastTime }}</div>
-      </li>
-    </ul>
+      </div>
+    </div>
   </div>
 </template>
 
