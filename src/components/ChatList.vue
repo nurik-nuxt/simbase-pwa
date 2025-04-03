@@ -5,7 +5,7 @@
           v-for="chat in chats"
           :key="chat.id"
           class="chat-item"
-          @click="onSelectChat(chat.id)"
+          @click.stop="onSelectChat(chat.id)"
       >
         <img :src="chat.avatar" alt="avatar" class="chat-item-avatar" />
         <div class="chat-item-info">
@@ -64,6 +64,7 @@ function onSelectChat(chatId: number) {
   padding: 0.5rem;
   cursor: pointer;
   border-bottom: 1px solid #ccc;
+  touch-action: manipulation;
 }
 
 .chat-item:hover {
