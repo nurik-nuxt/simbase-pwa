@@ -1,11 +1,19 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ],
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue"],
   "compilerOptions": {
-    "skipLibCheck": true
-  }
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "strict": true,
+    "jsx": "preserve",
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "lib": ["esnext", "dom"],
+    "skipLibCheck": true,
+    "declaration": true,
+    "declarationDir": "types",  // Здесь указываем папку для деклараций
+    "outDir": "dist"
+  },
+  "include": ["src/**/*.ts", "src/**/*.vue"],
+  "exclude": ["node_modules"]
 }
