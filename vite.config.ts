@@ -1,6 +1,7 @@
-import { defineConfig } from 'vite'
+import {build, defineConfig} from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { VitePWA } from 'vite-plugin-pwa'
+import {resolve} from "path";
 
 // https://vite.dev/config/
 export default defineConfig({
