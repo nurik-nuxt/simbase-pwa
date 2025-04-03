@@ -11,6 +11,6 @@ type __VLS_Props = {
 declare const _default: import("vue").DefineComponent<__VLS_Props, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {} & {
     select: (chatId: number) => any;
 }, string, import("vue").PublicProps, Readonly<__VLS_Props> & Readonly<{
-    onSelect?: (chatId: number) => any;
+    onSelect?: ((chatId: number) => any) | undefined;
 }>, {}, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
 export default _default;

@@ -100,3 +100,8 @@ button:focus-visible {
   height: 100%;
   object-fit: cover;
 }
+
+ion-content {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}

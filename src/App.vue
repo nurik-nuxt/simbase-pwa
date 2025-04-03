@@ -11,11 +11,6 @@ import HeaderBar from "./components/HeaderBar.vue";
 
 <template>
   <ion-page>
-<!--    <ion-header>-->
-<!--      <ion-toolbar>-->
-<!--        <ion-title>Мои экраны со свайпом</ion-title>-->
-<!--      </ion-toolbar>-->
-<!--    </ion-header>-->
     <HeaderBar />
     <ion-content>
       <Swiper />
