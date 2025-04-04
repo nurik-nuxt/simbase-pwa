@@ -63,6 +63,8 @@ function scrollRight() {
   gap: 4px;
   overflow-x: auto;
   scroll-behavior: smooth; /* плавная прокрутка */
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
 }
 .scroll-button {
   background: #6E7077;
