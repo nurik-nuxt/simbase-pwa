@@ -163,6 +163,8 @@ function onBack() {
   flex: 1;
   overflow-y: auto;
   padding: 1rem;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
   background-color: #f2f2f2;
 }
 
