@@ -3,14 +3,13 @@
   <ChatList
       v-if="!selectedChatId"
       :chats="chatList"
-      @select="selectChat"
   />
-  <ChatView
-      v-else
-      :name="selectedChat?.name || ''"
-      :avatar="selectedChat?.avatar || ''"
-      @back="unselectChat"
-  />
+<!--  <ChatView-->
+<!--      v-else-->
+<!--      :name="selectedChat?.name || ''"-->
+<!--      :avatar="selectedChat?.avatar || ''"-->
+<!--      @back="unselectChat"-->
+<!--  />-->
 </template>
 
 <script setup lang="ts">

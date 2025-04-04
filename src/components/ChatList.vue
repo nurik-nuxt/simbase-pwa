@@ -66,6 +66,7 @@ function onSelectChat(chatId: number) {
   padding: 0.5rem;
   cursor: pointer;
   border-bottom: 1px solid #ccc;
+  touch-action: manipulation;
 }
 
 .chat-item:hover {
