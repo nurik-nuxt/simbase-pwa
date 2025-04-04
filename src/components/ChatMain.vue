@@ -3,13 +3,14 @@
   <ChatList
       v-if="!selectedChatId"
       :chats="chatList"
+      @select="selectChat"
   />
-<!--  <ChatView-->
-<!--      v-else-->
-<!--      :name="selectedChat?.name || ''"-->
-<!--      :avatar="selectedChat?.avatar || ''"-->
-<!--      @back="unselectChat"-->
-<!--  />-->
+  <ChatView
+      v-else
+      :name="selectedChat?.name || ''"
+      :avatar="selectedChat?.avatar || ''"
+      @back="unselectChat"
+  />
 </template>
 
 <script setup lang="ts">
@@ -28,6 +29,90 @@ interface ChatListItem {
 
 // Исходный список чатов (можно загрузить с сервера и т. д.)
 const chatList = ref<ChatListItem[]>([
+  {
+    id: 1,
+    name: 'Иван Петров',
+    avatar: 'https://placehold.co/40?text=IP',
+    lastMessage: 'Привет! Как дела?',
+    lastTime: '14:30',
+  },
+  {
+    id: 2,
+    name: 'Мария Сидорова',
+    avatar: 'https://placehold.co/40?text=MS',
+    lastMessage: 'Когда встретимся?',
+    lastTime: '13:10',
+  },
+  {
+    id: 3,
+    name: 'Другой контакт',
+    avatar: 'https://placehold.co/40?text=DC',
+    lastMessage: 'Ок, принято!',
+    lastTime: 'Вчера',
+  },
+  {
+    id: 3,
+    name: 'Другой контакт',
+    avatar: 'https://placehold.co/40?text=DC',
+    lastMessage: 'Ок, принято!',
+    lastTime: 'Вчера',
+  },
+  {
+    id: 3,
+    name: 'Другой контакт',
+    avatar: 'https://placehold.co/40?text=DC',
+    lastMessage: 'Ок, принято!',
+    lastTime: 'Вчера',
+  },
+  {
+    id: 3,
+    name: 'Другой контакт',
+    avatar: 'https://placehold.co/40?text=DC',
+    lastMessage: 'Ок, принято!',
+    lastTime: 'Вчера',
+  },
+  {
+    id: 1,
+    name: 'Иван Петров',
+    avatar: 'https://placehold.co/40?text=IP',
+    lastMessage: 'Привет! Как дела?',
+    lastTime: '14:30',
+  },
+  {
+    id: 2,
+    name: 'Мария Сидорова',
+    avatar: 'https://placehold.co/40?text=MS',
+    lastMessage: 'Когда встретимся?',
+    lastTime: '13:10',
+  },
+  {
+    id: 3,
+    name: 'Другой контакт',
+    avatar: 'https://placehold.co/40?text=DC',
+    lastMessage: 'Ок, принято!',
+    lastTime: 'Вчера',
+  },
+  {
+    id: 3,
+    name: 'Другой контакт',
+    avatar: 'https://placehold.co/40?text=DC',
+    lastMessage: 'Ок, принято!',
+    lastTime: 'Вчера',
+  },
+  {
+    id: 3,
+    name: 'Другой контакт',
+    avatar: 'https://placehold.co/40?text=DC',
+    lastMessage: 'Ок, принято!',
+    lastTime: 'Вчера',
+  },
+  {
+    id: 3,
+    name: 'Другой контакт',
+    avatar: 'https://placehold.co/40?text=DC',
+    lastMessage: 'Ок, принято!',
+    lastTime: 'Вчера',
+  },
   {
     id: 1,
     name: 'Иван Петров',

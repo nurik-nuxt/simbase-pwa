@@ -1,5 +1,5 @@
 <template>
-  <swiper class="mySwiper" :initial-slide="1">
+  <swiper class="mySwiper" :initial-slide="1" :nested="true">
     <swiper-slide>Виджеты</swiper-slide>
     <swiper-slide>Главная экран</swiper-slide>
     <swiper-slide>
