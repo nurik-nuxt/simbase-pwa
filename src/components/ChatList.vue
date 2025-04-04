@@ -1,20 +1,22 @@
 <template>
-  <div class="chat-list-container">
-    <ul class="chat-list">
-      <li
-          v-for="chat in chats"
-          :key="chat.id"
-          class="chat-item"
-          @click="onSelectChat(chat.id)"
-      >
-        <img :src="chat.avatar" alt="avatar" class="chat-item-avatar" />
-        <div class="chat-item-info">
-          <div class="chat-item-name">{{ chat.name }}</div>
-          <div class="chat-item-lastMessage">{{ chat.lastMessage }}</div>
-        </div>
-        <div class="chat-item-time">{{ chat.lastTime }}</div>
-      </li>
-    </ul>
+  <div>
+    <div class="chat-list-container">
+      <ul class="chat-list">
+        <li
+            v-for="chat in chats"
+            :key="chat.id"
+            class="chat-item"
+            @click="onSelectChat(chat.id)"
+        >
+          <img :src="chat.avatar" alt="avatar" class="chat-item-avatar" />
+          <div class="chat-item-info">
+            <div class="chat-item-name">{{ chat.name }}</div>
+            <div class="chat-item-lastMessage">{{ chat.lastMessage }}</div>
+          </div>
+          <div class="chat-item-time">{{ chat.lastTime }}</div>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
