@@ -81,18 +81,17 @@ button:focus-visible {
 .swiper {
   width: 100%;
   height: 100%;
+  touch-action: pan-x; /* Restrict Swiper to horizontal touch */
 }
 
 .swiper-slide {
   text-align: center;
   font-size: 18px;
   background: #fff;
-
-  /* Center slide text vertically */
   display: flex;
   justify-content: center;
   align-items: center;
-  touch-action: pan-y;
+  touch-action: auto; /* Allow default touch behavior in slides */
 }
 
 .swiper-slide img {

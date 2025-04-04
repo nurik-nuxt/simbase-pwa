@@ -1,5 +1,11 @@
 <template>
-  <swiper class="mySwiper" :initial-slide="1" :nested="true">
+  <swiper
+      class="mySwiper"
+      :initial-slide="1"
+      :nested="true"
+      :touch-move-stop-propagation="true"
+      :touch-ratio="0.5"
+  >
     <swiper-slide>
       <Widgets />
     </swiper-slide>

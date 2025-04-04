@@ -99,6 +99,7 @@ function handleTouchEnd(e: TouchEvent) {
   max-height: calc(100vh - 44px);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
 }
 .chat-list {
   list-style: none;

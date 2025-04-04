@@ -158,12 +158,15 @@ onMounted(() => {
 <style scoped>
 .big-widgets {
   max-height: calc(100vh - 140px);
-  overflow-y: auto;  /* Вертикальный скролл */
+  overflow-y: auto; /* Vertical scroll */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling (works on some Android browsers) */
+  touch-action: pan-y; /* Allow vertical scrolling */
   padding: 16px;
 }
+
 .chart-container {
   position: relative;
-  height: 300px;  /* Фиксированная высота для корректного отображения графика */
+  height: 300px;
   margin-bottom: 16px;
   background: #f5f5f5;
   border: 1px solid #ccc;
