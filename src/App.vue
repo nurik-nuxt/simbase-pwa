@@ -35,13 +35,13 @@ const installApp = async () => {
 <template>
   <ion-page>
     <HeaderBar />
-    <ion-content>
+    <ion-content :fullscreen="true">
       <!-- Кнопка установки всегда видна -->
-      <div style="padding: 16px;">
-        <ion-button @click="installApp">
-          Установить приложение
-        </ion-button>
-      </div>
+<!--      <div style="padding: 16px;">-->
+<!--        <ion-button @click="installApp">-->
+<!--          Установить приложение-->
+<!--        </ion-button>-->
+<!--      </div>-->
       <Swiper />
     </ion-content>
   </ion-page>

@@ -1,19 +1,21 @@
 <template>
-  <swiper
-      class="mySwiper"
-      :initial-slide="1"
-      :nested="true"
-      :touch-move-stop-propagation="true"
-      :touch-ratio="0.5"
-  >
-    <swiper-slide>
-      <Widgets />
-    </swiper-slide>
-    <swiper-slide>Главная экран</swiper-slide>
-    <swiper-slide>
-      <ChatMain />
-    </swiper-slide>
-  </swiper>
+  <div class="swiper-wrapper">
+    <swiper
+        class="mySwiper"
+        :initial-slide="1"
+        :nested="true"
+        :touch-move-stop-propagation="true"
+        :touch-ratio="0.5"
+    >
+      <swiper-slide>
+        <Widgets />
+      </swiper-slide>
+      <swiper-slide>Главная экран</swiper-slide>
+      <swiper-slide>
+        <ChatMain />
+      </swiper-slide>
+    </swiper>
+  </div>
 </template>
 <script>
 // Import Swiper Vue.js components
@@ -39,3 +41,10 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.swiper-wrapper {
+  padding-bottom: env(safe-area-inset-bottom);
+  height: 100%;
+}
+</style>
