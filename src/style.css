@@ -61,7 +61,6 @@ button:focus-visible {
 #app {
   max-width: 1280px;
   margin: 0 auto;
-  padding: env(safe-area-inset-top) 2rem env(safe-area-inset-bottom);
   text-align: center;
   flex: 1;
 }
@@ -100,11 +99,4 @@ button:focus-visible {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-ion-content {
-  --padding-top: env(safe-area-inset-top);
-  --padding-bottom: env(safe-area-inset-bottom);
-  --padding-start: env(safe-area-inset-left);
-  --padding-end: env(safe-area-inset-right);
 }
