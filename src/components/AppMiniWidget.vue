@@ -3,9 +3,6 @@ import { ref } from 'vue'
 import MiniWidget from "./MiniWidget.vue";
 
 const container = ref<HTMLElement | null>(null);
-let startX = 0;
-let startY = 0;
-let isScrolling = false;
 
 function scrollLeft() {
   container.value?.scrollBy({
@@ -21,72 +18,51 @@ function scrollRight() {
   });
 }
 
-// Обработка начала касания
-function handleTouchStart(e: TouchEvent) {
-  startX = e.touches[0].clientX;
-  startY = e.touches[0].clientY;
-  isScrolling = false;
+// Предотвращаем всплытие события wheel (прокрутка колесиком мыши)
+function handleWheel(event: WheelEvent) {
+  event.stopPropagation();
+  event.preventDefault();
+
+  const scrollAmount = event.deltaX || event.deltaY; // Учитываем горизонтальную или вертикальную прокрутку
+  container.value?.scrollBy({
+    left: scrollAmount,
+    behavior: 'smooth'
+  });
 }
 
-// Обработка движения касания
-function handleTouchMove(e: TouchEvent) {
-  if (!container.value) return;
-
-  const currentX = e.touches[0].clientX;
-  const currentY = e.touches[0].clientY;
-  const deltaX = currentX - startX;
-  const deltaY = currentY - startY;
-
-  // Определяем, начался ли горизонтальный скролл
-  if (!isScrolling && Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 5) {
-    isScrolling = true; // Флаг, что начался горизонтальный скролл
-  }
-
-  // Если скролл горизонтальный, блокируем Swiper
-  if (isScrolling) {
-    e.stopPropagation(); // Предотвращаем передачу события в Swiper
-  }
-}
-
-// Обработка окончания касания
-function handleTouchEnd(e: TouchEvent) {
-  startX = 0;
-  startY = 0;
-  isScrolling = false;
+// Предотвращаем всплытие событий касания (touch)
+function handleTouchMove(event: TouchEvent) {
+  event.stopPropagation();
 }
 </script>
 
 <template>
-  <div
-      class="app-mini-widget-wrapper"
-      @touchstart="handleTouchStart"
-      @touchmove="handleTouchMove"
-      @touchend="handleTouchEnd"
-  >
+  <div class="app-mini-widget-wrapper">
     <button class="scroll-button left" @click="scrollLeft"><</button>
-    <div ref="container" class="app-mini-widget">
+    <div
+        ref="container"
+        class="app-mini-widget"
+        @wheel="handleWheel"
+        @touchmove="handleTouchMove"
+    >
       <MiniWidget value="300" />
-      <MiniWidget :value="20" footer-value="Пользователи"/>
+      <MiniWidget :value="20" footer-value="Пользователи" />
       <MiniWidget :value="3" />
       <MiniWidget value="12:40" footer-value="UTC+05:00" />
       <MiniWidget value="300" />
-      <MiniWidget :value="20" footer-value="Пользователи"/>
-      <MiniWidget :value="3" />
-      <MiniWidget value="300" />
-      <MiniWidget :value="20" footer-value="Пользователи"/>
+      <MiniWidget :value="20" footer-value="Пользователи" />
       <MiniWidget :value="3" />
       <MiniWidget value="12:40" footer-value="UTC+05:00" />
       <MiniWidget value="300" />
-      <MiniWidget :value="20" footer-value="Пользователи"/>
-      <MiniWidget :value="3" />
-      <MiniWidget value="12:40" footer-value="UTC+05:00" />
-      <MiniWidget value="12:40" footer-value="UTC+05:00" />
-      <MiniWidget value="300" />
-      <MiniWidget :value="20" footer-value="Пользователи"/>
+      <MiniWidget :value="20" footer-value="Пользователи" />
       <MiniWidget :value="3" />
       <MiniWidget value="12:40" footer-value="UTC+05:00" />
       <MiniWidget value="300" />
-      <MiniWidget :value="20" footer-value="Пользователи"/>
+      <MiniWidget :value="20" footer-value="Пользователи" />
+      <MiniWidget :value="3" />
+      <MiniWidget value="12:40" footer-value="UTC+05:00" />
+      <MiniWidget value="300" />
+      <MiniWidget :value="20" footer-value="Пользователи" />
       <MiniWidget :value="3" />
       <MiniWidget value="12:40" footer-value="UTC+05:00" />
     </div>
@@ -97,11 +73,11 @@ function handleTouchEnd(e: TouchEvent) {
 <style scoped>
 .app-mini-widget-wrapper {
   display: flex;
-  align-items: center;
+  align-items: stretch;
+  margin-top: 16px;
 }
 
 .app-mini-widget {
-  margin-top: 16px;
   display: flex;
   gap: 4px;
   overflow-x: auto;
@@ -122,6 +98,10 @@ function handleTouchEnd(e: TouchEvent) {
   border: none;
   padding: 4px;
   cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  outline: none;
 }
 
 .scroll-button.left {
