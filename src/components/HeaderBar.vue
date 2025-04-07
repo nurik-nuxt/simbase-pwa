@@ -5,7 +5,7 @@ import { ellipsisVertical } from 'ionicons/icons'
 
 <template>
   <ion-header>
-    <ion-toolbar style="--ion-title-text-align: start;">
+    <ion-toolbar>
       <ion-buttons slot="start">
         <ion-button>
           <img
@@ -24,9 +24,14 @@ import { ellipsisVertical } from 'ionicons/icons'
         </ion-button>
       </ion-buttons>
     </ion-toolbar>
-
   </ion-header>
 </template>
 
 <style scoped>
+ion-header {
+  height: 56px;
+}
+ion-toolbar {
+  --min-height: 56px;
+}
 </style>

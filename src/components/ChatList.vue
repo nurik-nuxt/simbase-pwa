@@ -104,7 +104,7 @@ function handleTouchEnd(e: TouchEvent) {
 .chat-list {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 0 0 env(safe-area-inset-bottom) 0;
 }
 .chat-item {
   display: flex;

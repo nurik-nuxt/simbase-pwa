@@ -183,11 +183,11 @@ onMounted(() => {
 
 <style scoped>
 .big-widgets {
-  max-height: calc(100vh - 120px - env(safe-area-inset-bottom) - env(safe-area-inset-top));
+  max-height: calc(100vh - 131px);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
-  padding: 16px;
+  padding: 16px 16px env(safe-area-inset-bottom) 16px;
   transition: padding-top 0.3s ease; /* Плавный переход */
 }
 
@@ -206,7 +206,7 @@ onMounted(() => {
 /* Для мобильных устройств с поддержкой svh */
 @supports (height: 100svh) {
   .big-widgets {
-    max-height: calc(100svh - 120px);
+    max-height: calc(100svh - 131px);
   }
 }
 </style>
