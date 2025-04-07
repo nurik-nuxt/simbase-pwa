@@ -3,7 +3,7 @@
     <!-- Шапка чата -->
     <header class="chat-header">
       <button class="back-button" @click="onBack">
-        <span>&larr;</span> <!-- Условная иконка назад -->
+        <span>←</span>
       </button>
       <div class="chat-user-info">
         <img class="user-avatar" src="../assets/men.png" alt="User Avatar" />
@@ -15,7 +15,7 @@
     </header>
 
     <!-- Список сообщений -->
-    <main class="chat-messages">
+    <main class="chat-messages" ref="messagesRef">
       <div
           v-for="(msg, i) in messages"
           :key="i"
@@ -36,10 +36,7 @@
           placeholder="Сообщение"
           @keyup.enter="sendMessage"
       />
-      <button
-          class="send-button"
-          @click="sendMessage"
-      >
+      <button class="send-button" @click="sendMessage">
         Отправить
       </button>
     </footer>
@@ -47,30 +44,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { defineProps, defineEmits } from 'vue';
 
-// Тип для поля "from" (от кого сообщение)
 type FromType = 'message-from-me' | 'message-from-them';
 
-// Интерфейс одного сообщения
 interface ChatMessage {
   text: string;
   time: string;
   from: FromType;
 }
 
-// Принимаем из вне имя и аватар текущего чата
 const props = defineProps<{
   name: string;
   avatar: string;
 }>();
 
-console.log(props)
-// Отправляем событие 'back', когда нажимаем кнопку "Назад"
 const emits = defineEmits<{ (e: 'back'): void }>();
 
-// Список сообщений (для примера – захардкоженный)
 const messages = ref<ChatMessage[]>([
   {
     text: 'Привет! Как дела?',
@@ -84,10 +75,41 @@ const messages = ref<ChatMessage[]>([
   },
 ]);
 
-// Текущее вводимое сообщение
 const newMessage = ref('');
+const messagesRef = ref<HTMLElement | null>(null);
+let lastScrollPos = 0;
+const headerHeight = 44; // Высота шапки чата (примерное значение)
 
-// Метод отправки сообщения
+onMounted(() => {
+  // Обработчик скролла для скрытия адресной строки
+  const handleScroll = () => {
+    const currentScrollPos = window.pageYOffset;
+
+    if (currentScrollPos > lastScrollPos && currentScrollPos > headerHeight) {
+      // Скролл вниз - скрываем адресную строку
+      document.body.style.paddingTop = '0';
+      window.scrollTo({ top: currentScrollPos + headerHeight, behavior: 'auto' });
+    } else if (currentScrollPos < lastScrollPos) {
+      // Скролл вверх - показываем адресную строку
+      document.body.style.paddingTop = `${headerHeight}px`;
+    }
+
+    lastScrollPos = currentScrollPos;
+  };
+
+  window.addEventListener('scroll', handleScroll);
+
+  // Автопрокрутка к последнему сообщению
+  if (messagesRef.value) {
+    messagesRef.value.scrollTop = messagesRef.value.scrollHeight;
+  }
+
+  // Очистка обработчика при размонтировании
+  onUnmounted(() => {
+    window.removeEventListener('scroll', handleScroll);
+  });
+});
+
 function sendMessage() {
   if (!newMessage.value.trim()) return;
   const msg: ChatMessage = {
@@ -97,9 +119,15 @@ function sendMessage() {
   };
   messages.value.push(msg);
   newMessage.value = '';
+
+  // Прокрутка к последнему сообщению после отправки
+  setTimeout(() => {
+    if (messagesRef.value) {
+      messagesRef.value.scrollTop = messagesRef.value.scrollHeight;
+    }
+  }, 0);
 }
 
-// Метод "Назад"
 function onBack() {
   emits('back');
 }
@@ -109,7 +137,8 @@ function onBack() {
 .chat-container {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  position: relative;
 }
 
 /* Шапка чата */
@@ -119,6 +148,9 @@ function onBack() {
   padding: 0.5rem;
   border-bottom: 1px solid #ccc;
   background-color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .back-button {
@@ -150,6 +182,7 @@ function onBack() {
 .chat-actions {
   margin-left: auto;
 }
+
 .chat-actions button {
   background: none;
   border: none;
@@ -167,6 +200,7 @@ function onBack() {
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
   background-color: #f2f2f2;
+  transition: padding-top 0.3s ease;
 }
 
 .message {
@@ -178,22 +212,20 @@ function onBack() {
   position: relative;
 }
 
-/* Свои сообщения (справа) */
 .message-from-me {
   margin-left: auto;
   background-color: #dcf8c6;
 }
 
-/* Чужие сообщения (слева) */
 .message-from-them {
   margin-right: auto;
   background-color: #fff;
 }
 
-/* Текст и время сообщения */
 .message-text {
   margin: 0;
 }
+
 .message-time {
   display: block;
   font-size: 0.7rem;
@@ -209,6 +241,10 @@ function onBack() {
   border-top: 1px solid #ccc;
   background-color: #fff;
   padding: 0.5rem;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  padding-bottom: calc(0.5rem + env(safe-area-inset-bottom)); /* Учет статус-бара */
 }
 
 .chat-input {
@@ -232,5 +268,12 @@ function onBack() {
 
 .send-button:hover {
   opacity: 0.9;
+}
+
+/* Поддержка современных единиц измерения */
+@supports (height: 100svh) {
+  .chat-container {
+    height: calc(100svh - 44px);
+  }
 }
 </style>

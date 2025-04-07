@@ -6,7 +6,7 @@ import BigWidgets from "./BigWidgets.vue";
 <template>
   <div class="widgets">
     <AppMiniWidget />
-    <BigWidgets style="margin-top: 3rem; padding-bottom: calc(env(safe-area-inset-bottom) + env(safe-area-inset-top) + 44px)" />
+    <BigWidgets />
   </div>
 </template>
 

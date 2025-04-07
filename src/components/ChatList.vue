@@ -104,7 +104,7 @@ function handleTouchEnd(e: TouchEvent) {
 .chat-list {
   list-style: none;
   margin: 0;
-  padding: 0 0 calc(env(safe-area-inset-bottom) + env(safe-area-inset-top) + 44px) 0;
+  padding: 0;
 }
 .chat-item {
   display: flex;
@@ -145,5 +145,11 @@ function handleTouchEnd(e: TouchEvent) {
   color: #999;
   margin-left: auto;
   margin-right: 0.5rem;
+}
+
+@supports (height: 100svh) {
+  .chat-list-container {
+    max-height: calc(100svh - 44px);
+  }
 }
 </style>
