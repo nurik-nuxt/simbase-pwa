@@ -11,7 +11,6 @@
         <Widgets />
       </swiper-slide>
       <swiper-slide>
-        Тест
         <main-page />
       </swiper-slide>
       <swiper-slide>
