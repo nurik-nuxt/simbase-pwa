@@ -15,6 +15,9 @@ import { ellipsisVertical } from 'ionicons/icons'
           />
         </ion-button>
       </ion-buttons>
+      <ion-title>
+        Simbase
+      </ion-title>
       <ion-buttons slot="end">
         <ion-button>
           <ion-icon :icon="ellipsisVertical" />

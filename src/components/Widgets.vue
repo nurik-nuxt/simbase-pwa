@@ -6,7 +6,6 @@ import BigWidgets from "./BigWidgets.vue";
 <template>
   <div class="widgets">
     <AppMiniWidget />
-    sdfsdffs
     <BigWidgets />
   </div>
 </template>
