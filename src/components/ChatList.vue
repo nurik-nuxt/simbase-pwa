@@ -96,7 +96,7 @@ function handleTouchEnd(e: TouchEvent) {
 
 <style scoped>
 .chat-list-container {
-  max-height: calc(100vh - 44px);
+  max-height: calc(100vh - 56px);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
@@ -149,7 +149,7 @@ function handleTouchEnd(e: TouchEvent) {
 
 @supports (height: 100svh) {
   .chat-list-container {
-    max-height: calc(100svh - 44px);
+    max-height: calc(100svh - 56px);
   }
 }
 </style>

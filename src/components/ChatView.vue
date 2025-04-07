@@ -273,7 +273,7 @@ function onBack() {
 /* Поддержка современных единиц измерения */
 @supports (height: 100svh) {
   .chat-container {
-    height: calc(100svh - 44px);
+    height: calc(100svh - 56px);
   }
 }
 </style>
