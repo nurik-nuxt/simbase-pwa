@@ -6,7 +6,7 @@
         <span>&larr;</span> <!-- Условная иконка назад -->
       </button>
       <div class="chat-user-info">
-        <img class="user-avatar" :src="avatar" alt="User Avatar" />
+        <img class="user-avatar" src="../assets/men.png" alt="User Avatar" />
         <span class="user-name">{{ name }}</span>
       </div>
       <div class="chat-actions">
@@ -126,6 +126,7 @@ function onBack() {
   border: none;
   font-size: 1rem;
   cursor: pointer;
+  color: #1a1a1a;
 }
 
 .chat-user-info {

@@ -13,7 +13,7 @@
           class="chat-item"
           @click="onSelectChat(chat.id)"
       >
-        <img :src="chat.avatar" alt="avatar" class="chat-item-avatar" />
+        <img src="../assets/men.png" alt="avatar" class="chat-item-avatar" />
         <div class="chat-item-info">
           <div class="chat-item-name">{{ chat.name }}</div>
           <div class="chat-item-lastMessage">{{ chat.lastMessage }}</div>
@@ -104,7 +104,7 @@ function handleTouchEnd(e: TouchEvent) {
 .chat-list {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 0 0 calc(env(safe-area-inset-bottom) + env(safe-area-inset-top) + 44px) 0;
 }
 .chat-item {
   display: flex;

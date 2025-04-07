@@ -10,7 +10,9 @@
       <swiper-slide>
         <Widgets />
       </swiper-slide>
-      <swiper-slide>Главная экран</swiper-slide>
+      <swiper-slide>
+        <main-page />
+      </swiper-slide>
       <swiper-slide>
         <ChatMain />
       </swiper-slide>
@@ -28,9 +30,11 @@ import '../style.css';
 import ChatView from "./ChatView.vue";
 import ChatMain from "./ChatMain.vue";
 import Widgets from "./Widgets.vue";
+import MainPage from "./MainPage.vue";
 
 export default {
   components: {
+    MainPage,
     Widgets,
     ChatMain,
     Swiper,
