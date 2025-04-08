@@ -6,13 +6,15 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vue-tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate-icons": "node scripts/generate-icons.js"
   },
   "dependencies": {
     "@capacitor/cli": "^7.2.0",
     "@capacitor/core": "^7.2.0",
     "@ionic/vue": "^8.5.3",
     "chart.js": "^4.4.8",
+    "sharp": "^0.34.1",
     "swiper": "^10.0.0",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"
