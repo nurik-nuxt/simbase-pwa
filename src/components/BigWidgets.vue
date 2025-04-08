@@ -187,7 +187,7 @@ onMounted(() => {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
-  padding: 16px 16px env(safe-area-inset-bottom) 16px;
+  padding: 16px 0 env(safe-area-inset-bottom);
   transition: padding-top 0.3s ease; /* Плавный переход */
 }
 
