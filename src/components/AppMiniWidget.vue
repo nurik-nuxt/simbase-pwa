@@ -4,8 +4,6 @@ import MiniWidget from "./MiniWidget.vue";
 
 const container = ref<HTMLElement | null>(null);
 
-const props = defineProps<{ mainSwiper: any }>();
-
 
 function scrollLeft() {
   container.value?.scrollBy({
