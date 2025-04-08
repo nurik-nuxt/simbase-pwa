@@ -11,7 +11,7 @@
         <Widgets />
       </swiper-slide>
       <swiper-slide>
-        <main-page />
+        <MainPage />
       </swiper-slide>
       <swiper-slide>
         <ChatMain />
@@ -19,31 +19,21 @@
     </swiper>
   </div>
 </template>
-<script>
-// Import Swiper Vue.js components
+
+<script setup lang="ts">
+import { ref } from 'vue';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 
-// Import Swiper styles
+// Импорт стилей Swiper
 import 'swiper/css';
 
 import '../style.css';
-import ChatView from "./ChatView.vue";
-import ChatMain from "./ChatMain.vue";
-import Widgets from "./Widgets.vue";
-import MainPage from "./MainPage.vue";
+import ChatView from './ChatView.vue';
+import ChatMain from './ChatMain.vue';
+import Widgets from './Widgets.vue';
+import MainPage from './MainPage.vue';
 
-export default {
-  components: {
-    MainPage,
-    Widgets,
-    ChatMain,
-    Swiper,
-    SwiperSlide,
-  },
-  setup() {
-    return {};
-  },
-};
+const mainSwiper = ref<any>(null);
 </script>
 
 <style scoped>
