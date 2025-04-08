@@ -56,7 +56,15 @@ const isInputFocused = ref(false);
 
 function scrollToBottom() {
   if (messagesContainer.value) {
-    messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+    const container = messagesContainer.value;
+    const scrollHeight = container.scrollHeight;
+    const maxScroll = scrollHeight - container.clientHeight;
+    
+    // Плавно прокручиваем к последнему сообщению
+    container.scrollTo({
+      top: maxScroll,
+      behavior: 'smooth'
+    });
   }
 }
 
@@ -70,14 +78,29 @@ function sendMessage() {
 
 const onFocus = () => {
   isInputFocused.value = true;
+  // Даем время клавиатуре появиться и затем прокручиваем контент
   setTimeout(() => {
+    // Сначала прокручиваем к последнему сообщению
     scrollToBottom();
-    window.scrollTo(0, 0);
+    // Затем фиксируем позицию экрана
+    if (window.visualViewport) {
+      window.scrollTo(0, 0);
+      document.body.style.height = `${window.visualViewport.height}px`;
+    }
+    // Еще раз прокручиваем к последнему сообщению для надежности
+    requestAnimationFrame(() => {
+      scrollToBottom();
+    });
   }, 100);
 };
 
 const onBlur = () => {
   isInputFocused.value = false;
+  document.body.style.height = '';
+  // После скрытия клавиатуры снова прокручиваем к последнему сообщению
+  setTimeout(() => {
+    scrollToBottom();
+  }, 100);
 };
 
 onMounted(() => {
