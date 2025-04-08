@@ -2,7 +2,7 @@
   <div class="swiper-wrapper">
     <swiper
         class="mySwiper"
-        :initial-slide="initialSlide"
+        :initial-slide="1"
         :nested="true"
         :touch-move-stop-propagation="true"
         :touch-ratio="0.5"
@@ -11,7 +11,7 @@
         <Widgets />
       </swiper-slide>
       <swiper-slide>
-        <MainPage />
+        <main-page />
       </swiper-slide>
       <swiper-slide>
         <ChatMain />
@@ -19,10 +19,13 @@
     </swiper>
   </div>
 </template>
-
 <script>
+// Import Swiper Vue.js components
 import { Swiper, SwiperSlide } from 'swiper/vue';
+
+// Import Swiper styles
 import 'swiper/css';
+
 import '../style.css';
 import ChatView from "./ChatView.vue";
 import ChatMain from "./ChatMain.vue";
@@ -30,13 +33,6 @@ import Widgets from "./Widgets.vue";
 import MainPage from "./MainPage.vue";
 
 export default {
-  props: {
-    // Пропс для начального слайда
-    initialSlide: {
-      type: Number,
-      default: 1,
-    },
-  },
   components: {
     MainPage,
     Widgets,
@@ -44,11 +40,8 @@ export default {
     Swiper,
     SwiperSlide,
   },
-  setup(props) {
-    return {
-      // Передаем пропс в шаблон
-      initialSlide: props.initialSlide,
-    };
+  setup() {
+    return {};
   },
 };
 </script>
