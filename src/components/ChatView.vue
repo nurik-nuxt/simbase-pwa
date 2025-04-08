@@ -1,5 +1,6 @@
 <template>
-  <div class="chat-container">
+  <!-- Высота контейнера динамически задаётся через style -->
+  <div class="chat-container" :style="{ height: chatContainerHeight }">
     <!-- Шапка чата -->
     <header class="chat-header">
       <button class="back-button" @click="onBack">
@@ -35,6 +36,8 @@
           type="text"
           placeholder="Сообщение"
           @keyup.enter="sendMessage"
+          @focus="handleFocus"
+          @blur="handleBlur"
       />
       <button class="send-button" @click="sendMessage">
         Отправить
@@ -44,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { defineProps, defineEmits } from 'vue';
 
 type FromType = 'message-from-me' | 'message-from-them';
@@ -77,39 +80,17 @@ const messages = ref<ChatMessage[]>([
 
 const newMessage = ref('');
 const messagesRef = ref<HTMLElement | null>(null);
-let lastScrollPos = 0;
-const headerHeight = 44; // Высота шапки чата (примерное значение)
+// Значение высоты контейнера — изначально полная высота окна
+const chatContainerHeight = ref('100vh');
 
 onMounted(() => {
-  // Обработчик скролла для скрытия адресной строки
-  const handleScroll = () => {
-    const currentScrollPos = window.pageYOffset;
-
-    if (currentScrollPos > lastScrollPos && currentScrollPos > headerHeight) {
-      // Скролл вниз - скрываем адресную строку
-      document.body.style.paddingTop = '0';
-      window.scrollTo({ top: currentScrollPos + headerHeight, behavior: 'auto' });
-    } else if (currentScrollPos < lastScrollPos) {
-      // Скролл вверх - показываем адресную строку
-      document.body.style.paddingTop = `${headerHeight}px`;
-    }
-
-    lastScrollPos = currentScrollPos;
-  };
-
-  window.addEventListener('scroll', handleScroll);
-
-  // Автопрокрутка к последнему сообщению
+  // Автопрокрутка к последнему сообщению при инициализации
   if (messagesRef.value) {
     messagesRef.value.scrollTop = messagesRef.value.scrollHeight;
   }
-
-  // Очистка обработчика при размонтировании
-  onUnmounted(() => {
-    window.removeEventListener('scroll', handleScroll);
-  });
 });
 
+// Отправка сообщения и автопрокрутка вниз
 function sendMessage() {
   if (!newMessage.value.trim()) return;
   const msg: ChatMessage = {
@@ -120,7 +101,7 @@ function sendMessage() {
   messages.value.push(msg);
   newMessage.value = '';
 
-  // Прокрутка к последнему сообщению после отправки
+  // Прокручиваем список сообщений вниз
   setTimeout(() => {
     if (messagesRef.value) {
       messagesRef.value.scrollTop = messagesRef.value.scrollHeight;
@@ -131,14 +112,29 @@ function sendMessage() {
 function onBack() {
   emits('back');
 }
+
+/**
+ * При фокусе (открытии клавиатуры) фиксируем высоту контейнера,
+ * чтобы избежать перерасчёта 100vh и «прыгания» контента.
+ */
+function handleFocus() {
+  chatContainerHeight.value = window.innerHeight + 'px';
+}
+
+/**
+ * После потери фокуса возвращаем высоту контейнера обратно.
+ */
+function handleBlur() {
+  chatContainerHeight.value = '100vh';
+}
 </script>
 
 <style scoped>
 .chat-container {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   position: relative;
+  overflow: hidden;
 }
 
 /* Шапка чата */
@@ -192,15 +188,15 @@ function onBack() {
   align-items: center;
 }
 
-/* Основная часть – скролл с сообщениями */
+/* Основная часть – список сообщений */
 .chat-messages {
   flex: 1;
   overflow-y: auto;
   padding: 1rem;
   -webkit-overflow-scrolling: touch;
-  touch-action: pan-y;
   background-color: #f2f2f2;
-  transition: padding-top 0.3s ease;
+  /* Резервируем место для фиксированного футера */
+  margin-bottom: 60px;
 }
 
 .message {
@@ -209,7 +205,7 @@ function onBack() {
   padding: 0.5rem;
   border-radius: 10px;
   font-size: 0.9rem;
-  position: relative;
+  word-break: break-word;
 }
 
 .message-from-me {
@@ -235,17 +231,19 @@ function onBack() {
   text-align: right;
 }
 
-/* Поле ввода */
+/* Футер – поле ввода */
 .chat-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
   align-items: center;
   border-top: 1px solid #ccc;
   background-color: #fff;
   padding: 0.5rem;
-  position: sticky;
-  bottom: 0;
+  padding-bottom: calc(0.5rem + env(safe-area-inset-bottom)); /* учёт safe-area */
   z-index: 10;
-  padding-bottom: calc(0.5rem + env(safe-area-inset-bottom)); /* Учет статус-бара */
 }
 
 .chat-input {
@@ -269,12 +267,5 @@ function onBack() {
 
 .send-button:hover {
   opacity: 0.9;
-}
-
-/* Поддержка современных единиц измерения */
-@supports (height: 100svh) {
-  .chat-container {
-    height: calc(100svh - 56px);
-  }
 }
 </style>
