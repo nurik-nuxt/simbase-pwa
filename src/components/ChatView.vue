@@ -78,6 +78,7 @@ const chatView = ref(null);
 const inputField = ref(null);
 const isInputFocused = ref(false);
 const lastScrollPosition = ref(0);
+const isAndroid = !CSS.supports('-webkit-touch-callout', 'none');
 
 function handleScroll(event) {
   lastScrollPosition.value = event.target.scrollTop;
@@ -90,7 +91,6 @@ function scrollToBottom(force = false) {
   const scrollHeight = container.scrollHeight;
   const maxScroll = scrollHeight - container.clientHeight;
   
-  // Используем requestAnimationFrame для более плавной прокрутки
   requestAnimationFrame(() => {
     if (force || container.scrollTop >= maxScroll - 100) {
       container.scrollTo({
@@ -98,12 +98,14 @@ function scrollToBottom(force = false) {
         behavior: force ? 'auto' : 'smooth'
       });
       
-      // Двойная проверка прокрутки
-      setTimeout(() => {
-        if (container.scrollTop < maxScroll) {
-          container.scrollTop = maxScroll;
-        }
-      }, 50);
+      // Дополнительная проверка прокрутки
+      if (isAndroid) {
+        setTimeout(() => {
+          if (container.scrollTop < maxScroll) {
+            container.scrollTop = maxScroll;
+          }
+        }, 50);
+      }
     }
   });
 }
@@ -117,18 +119,47 @@ function restoreScroll() {
 const onFocus = () => {
   isInputFocused.value = true;
   
-  // Даем время клавиатуре появиться
-  setTimeout(() => {
-    // Прокручиваем к последнему сообщению
-    scrollToBottom(true);
-    
-    // Прокручиваем страницу вверх, чтобы header был виден
-    window.scrollTo(0, 0);
-  }, 100);
+  // Сохраняем текущую позицию скролла
+  if (messagesContainer.value) {
+    lastScrollPosition.value = messagesContainer.value.scrollTop;
+  }
+  
+  // Разная обработка для Android и iOS
+  if (isAndroid) {
+    // На Android даем больше времени для появления клавиатуры
+    setTimeout(() => {
+      if (messagesContainer.value) {
+        // Восстанавливаем позицию скролла
+        messagesContainer.value.scrollTop = lastScrollPosition.value;
+        // Если были внизу, прокручиваем к последнему сообщению
+        const container = messagesContainer.value;
+        const maxScroll = container.scrollHeight - container.clientHeight;
+        if (lastScrollPosition.value >= maxScroll - 100) {
+          scrollToBottom(true);
+        }
+      }
+    }, 300);
+  } else {
+    // На iOS прокручиваем сразу
+    requestAnimationFrame(() => {
+      if (messagesContainer.value) {
+        messagesContainer.value.scrollTop = lastScrollPosition.value;
+      }
+    });
+  }
 };
 
 const onBlur = () => {
   isInputFocused.value = false;
+  
+  if (isAndroid) {
+    // На Android восстанавливаем скролл после закрытия клавиатуры
+    setTimeout(() => {
+      if (messagesContainer.value) {
+        messagesContainer.value.scrollTop = lastScrollPosition.value;
+      }
+    }, 100);
+  }
 };
 
 function sendMessage() {
@@ -142,9 +173,22 @@ function sendMessage() {
 onMounted(() => {
   scrollToBottom(true);
   
-  // Предотвращаем скролл на iOS
+  // Отключаем скролл документа
   document.body.style.overflow = 'hidden';
   document.documentElement.style.overflow = 'hidden';
+  
+  // Обработка изменения размера viewport на Android
+  if (isAndroid) {
+    window.visualViewport?.addEventListener('resize', () => {
+      if (isInputFocused.value) {
+        requestAnimationFrame(() => {
+          if (messagesContainer.value) {
+            messagesContainer.value.scrollTop = lastScrollPosition.value;
+          }
+        });
+      }
+    });
+  }
 });
 
 onBeforeUnmount(() => {
@@ -161,6 +205,13 @@ html, body {
   overflow: hidden;
   overscroll-behavior-y: none;
   -webkit-overflow-scrolling: none;
+  margin: 0;
+  padding: 0;
+}
+
+#app {
+  height: 100%;
+  width: 100%;
 }
 </style>
 
@@ -174,7 +225,7 @@ html, body {
   display: flex;
   flex-direction: column;
   background: white;
-  height: 100vh;
+  height: 100%;
   overflow: hidden;
   -webkit-overflow-scrolling: touch;
 }
@@ -215,8 +266,6 @@ html, body {
   background: #e5e5ea;
   padding: 10px;
   z-index: 1;
-  height: calc(100vh - 112px);
-  padding-bottom: 10px;
 }
 
 .message {
@@ -329,6 +378,22 @@ ion-input {
   opacity: 0.8;
 }
 
+/* Стили для Android */
+@supports not (-webkit-touch-callout: none) {
+  .chat-view {
+    height: 100vh;
+  }
+  
+  .messages {
+    height: calc(100vh - 112px);
+  }
+  
+  .input-area.keyboard-visible {
+    position: sticky;
+  }
+}
+
+/* Стили для iOS */
 @supports (-webkit-touch-callout: none) {
   .chat-view {
     height: -webkit-fill-available;
@@ -343,7 +408,7 @@ ion-input {
   }
 }
 
-/* Обновляем стили для iOS */
+/* Общие медиа-запросы для мобильных устройств */
 @media (max-width: 768px) {
   @supports (-webkit-touch-callout: none) {
     .messages {
@@ -352,6 +417,16 @@ ion-input {
     
     .input-area {
       min-height: calc(56px + env(safe-area-inset-bottom));
+    }
+  }
+  
+  @supports not (-webkit-touch-callout: none) {
+    .messages {
+      bottom: 56px;
+    }
+    
+    .input-area.keyboard-visible {
+      position: fixed;
     }
   }
 }
