@@ -23,7 +23,6 @@
 <script setup lang="ts">
 import { Swiper, SwiperSlide } from 'swiper/vue';
 
-// Импорт стилей Swiper
 import 'swiper/css';
 
 import '../style.css';
