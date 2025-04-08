@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import MiniWidget from "./MiniWidget.vue";
 
 const container = ref<HTMLElement | null>(null);
@@ -37,6 +37,14 @@ function handleWheel(event: WheelEvent) {
 function handleTouchMove(event: TouchEvent) {
   event.stopPropagation();
 }
+
+onMounted(() => {
+  container.value?.addEventListener('touchmove', handleTouchMove, { passive: false });
+});
+
+onBeforeUnmount(() => {
+  container.value?.removeEventListener('touchmove', handleTouchMove);
+});
 </script>
 
 <template>
