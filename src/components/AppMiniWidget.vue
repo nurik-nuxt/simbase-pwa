@@ -4,6 +4,12 @@ import MiniWidget from "./MiniWidget.vue";
 
 const container = ref<HTMLElement | null>(null);
 
+// Флаги и переменные для кастомного drag-to-scroll
+let isDragging = false;
+let startX = 0;
+let scrollStart = 0;
+
+// Функции для кнопок
 function scrollLeft() {
   container.value?.scrollBy({
     left: -100,
@@ -18,42 +24,70 @@ function scrollRight() {
   });
 }
 
-// Предотвращаем всплытие события wheel (прокрутка колесиком мыши)
+// Обработчик колесика мыши (desktop)
 function handleWheel(event: WheelEvent) {
   event.stopPropagation();
   event.preventDefault();
-
-  const scrollAmount = event.deltaX || event.deltaY; // Учитываем горизонтальную или вертикальную прокрутку
+  const scrollAmount = event.deltaX || event.deltaY;
   container.value?.scrollBy({
     left: scrollAmount,
     behavior: 'smooth'
   });
 }
 
-// Предотвращаем всплытие событий касания (touch)
-function handleTouchMove(event: TouchEvent) {
+// Обработка начала касания: фиксируем позицию и начальное значение scrollLeft
+function handleTouchStart(event: TouchEvent) {
+  isDragging = true;
+  startX = event.touches[0].pageX;
+  if (container.value) {
+    scrollStart = container.value.scrollLeft;
+  }
   event.stopPropagation();
+  // Не вызываем preventDefault здесь, чтобы не блокировать возможные другие нужные события
+}
+
+// Обработка движения пальца: вычисляем дельту и прокручиваем контейнер
+function handleTouchMove(event: TouchEvent) {
+  if (!isDragging) return;
+  const currentX = event.touches[0].pageX;
+  const dx = startX - currentX;
+  container.value?.scrollTo({
+    left: scrollStart + dx,
+    behavior: 'auto' // плавность можно настроить, если нужно
+  });
+  event.stopPropagation();
+  event.preventDefault(); // Блокируем передачу события родительскому swiper
+}
+
+// Завершаем процесс свайпа
+function handleTouchEnd(event: TouchEvent) {
+  isDragging = false;
+  event.stopPropagation();
+  // preventDefault здесь не обязателен
 }
 
 onMounted(() => {
-  container.value?.addEventListener('touchmove', handleTouchMove, { passive: false });
+  if (container.value) {
+    container.value.addEventListener('touchstart', handleTouchStart, { passive: false });
+    container.value.addEventListener('touchmove', handleTouchMove, { passive: false });
+    container.value.addEventListener('touchend', handleTouchEnd, { passive: false });
+  }
 });
 
 onBeforeUnmount(() => {
-  container.value?.removeEventListener('touchmove', handleTouchMove);
+  if (container.value) {
+    container.value.removeEventListener('touchstart', handleTouchStart);
+    container.value.removeEventListener('touchmove', handleTouchMove);
+    container.value.removeEventListener('touchend', handleTouchEnd);
+  }
 });
 </script>
 
 <template>
   <div class="app-mini-widget-wrapper">
-    <button class="scroll-button left" @click="scrollLeft"><</button>
-    <div
-        ref="container"
-        class="app-mini-widget"
-        @wheel="handleWheel"
-        @touchmove="handleTouchMove"
-        @touchend="handleTouchMove"
-    >
+    <button class="scroll-button left" @click="scrollLeft">&lt;</button>
+    <!-- Если используется swiper, можно добавить класс no-swiping -->
+    <div ref="container" class="app-mini-widget swiper-no-swiping" @wheel="handleWheel">
       <MiniWidget value="300" />
       <MiniWidget :value="20" footer-value="Пользователи" />
       <MiniWidget :value="3" />
@@ -75,7 +109,7 @@ onBeforeUnmount(() => {
       <MiniWidget :value="3" />
       <MiniWidget value="12:40" footer-value="UTC+05:00" />
     </div>
-    <button class="scroll-button right" @click="scrollRight">></button>
+    <button class="scroll-button right" @click="scrollRight">&gt;</button>
   </div>
 </template>
 
@@ -92,13 +126,14 @@ onBeforeUnmount(() => {
   overflow-x: auto;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
-  touch-action: pan-x pinch-zoom; /* Разрешаем горизонтальный скролл и зум */
-  -ms-touch-action: pan-x pinch-zoom; /* Поддержка для IE/Edge */
-  scrollbar-width: none; /* Убираем полосу прокрутки в Firefox */
+  /* Разрешаем только горизонтальный скролл и зум */
+  touch-action: pan-x pinch-zoom;
+  -ms-touch-action: pan-x pinch-zoom;
+  scrollbar-width: none; /* для Firefox */
 }
 
 .app-mini-widget::-webkit-scrollbar {
-  display: none; /* Убираем полосу прокрутки в Webkit-браузерах */
+  display: none; /* скрываем полосу прокрутки в браузерах на базе Webkit */
 }
 
 .scroll-button {
