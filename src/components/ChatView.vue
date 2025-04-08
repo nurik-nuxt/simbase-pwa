@@ -1,11 +1,11 @@
 <template>
-  <div class="chat-view">
+  <div class="chat-view" ref="chatView">
     <div class="header">
       <img :src="avatar" alt="Avatar" class="avatar" />
       <span class="name">{{ name }}</span>
     </div>
 
-    <div class="messages" ref="messagesContainer">
+    <div class="messages" ref="messagesContainer" @scroll="handleScroll">
       <div
         v-for="(msg, index) in messages"
         :key="index"
@@ -16,7 +16,7 @@
       </div>
     </div>
 
-    <div class="input-area">
+    <div class="input-area" :class="{ 'keyboard-visible': isInputFocused }">
       <form @submit.prevent="sendMessage" class="input-form">
         <ion-input
           ref="inputField"
@@ -27,8 +27,10 @@
           @ionFocus="onFocus"
           @ionBlur="onBlur"
         />
-        <button type="submit" class="send-button">
-          Отправить
+        <button type="submit" class="send-button" :disabled="!messageText.trim()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2.01 21L23 12L2.01 3L2 10L17 12L2 14L2.01 21Z" fill="currentColor"/>
+          </svg>
         </button>
       </form>
     </div>
@@ -47,77 +49,107 @@ const messages = ref([
   { text: 'Привет!', sender: 'them' },
   { text: 'Как дела?', sender: 'them' },
   { text: 'Всё отлично, а у тебя?', sender: 'me' },
+  { text: 'Привет!', sender: 'them' },
+  { text: 'Как дела?', sender: 'them' },
+  { text: 'Всё отлично, а у тебя?', sender: 'me' },
+  { text: 'Привет!', sender: 'them' },
+  { text: 'Как дела?', sender: 'them' },
+  { text: 'Всё отлично, а у тебя?', sender: 'me' },
+  { text: 'Привет!', sender: 'them' },
+  { text: 'Как дела?', sender: 'them' },
+  { text: 'Всё отлично, а у тебя?', sender: 'me' },
+  { text: 'Привет!', sender: 'them' },
+  { text: 'Как дела?', sender: 'them' },
+  { text: 'Всё отлично, а у тебя?', sender: 'me' },
+  { text: 'Привет!', sender: 'them' },
+  { text: 'Как дела?', sender: 'them' },
+  { text: 'Всё отлично, а у тебя?', sender: 'me' },
+  { text: 'Привет!', sender: 'them' },
+  { text: 'Как дела?', sender: 'them' },
+  { text: 'Всё отлично, а у тебя?', sender: 'me' },
+  { text: 'Привет!', sender: 'them' },
+  { text: 'Как дела?', sender: 'them' },
+  { text: 'Всё отлично, а у тебя?', sender: 'me' },
 ]);
 
 const messageText = ref('');
 const messagesContainer = ref(null);
+const chatView = ref(null);
 const inputField = ref(null);
 const isInputFocused = ref(false);
+const lastScrollPosition = ref(0);
 
-function scrollToBottom() {
-  if (messagesContainer.value) {
-    const container = messagesContainer.value;
-    const scrollHeight = container.scrollHeight;
-    const maxScroll = scrollHeight - container.clientHeight;
-    
-    // Плавно прокручиваем к последнему сообщению
-    container.scrollTo({
-      top: maxScroll,
-      behavior: 'smooth'
-    });
-  }
+function handleScroll(event) {
+  lastScrollPosition.value = event.target.scrollTop;
 }
 
-function sendMessage() {
-  if (messageText.value.trim() !== '') {
-    messages.value.push({ text: messageText.value, sender: 'me' });
-    messageText.value = '';
-    setTimeout(scrollToBottom, 10);
+function scrollToBottom(force = false) {
+  if (!messagesContainer.value) return;
+  
+  const container = messagesContainer.value;
+  const scrollHeight = container.scrollHeight;
+  const maxScroll = scrollHeight - container.clientHeight;
+  
+  // Используем requestAnimationFrame для более плавной прокрутки
+  requestAnimationFrame(() => {
+    if (force || container.scrollTop >= maxScroll - 100) {
+      container.scrollTo({
+        top: maxScroll,
+        behavior: force ? 'auto' : 'smooth'
+      });
+      
+      // Двойная проверка прокрутки
+      setTimeout(() => {
+        if (container.scrollTop < maxScroll) {
+          container.scrollTop = maxScroll;
+        }
+      }, 50);
+    }
+  });
+}
+
+function restoreScroll() {
+  if (messagesContainer.value && lastScrollPosition.value) {
+    messagesContainer.value.scrollTop = lastScrollPosition.value;
   }
 }
 
 const onFocus = () => {
   isInputFocused.value = true;
-  // Даем время клавиатуре появиться и затем прокручиваем контент
+  
+  // Даем время клавиатуре появиться
   setTimeout(() => {
-    // Сначала прокручиваем к последнему сообщению
-    scrollToBottom();
-    // Затем фиксируем позицию экрана
-    if (window.visualViewport) {
-      window.scrollTo(0, 0);
-      document.body.style.height = `${window.visualViewport.height}px`;
-    }
-    // Еще раз прокручиваем к последнему сообщению для надежности
-    requestAnimationFrame(() => {
-      scrollToBottom();
-    });
+    // Прокручиваем к последнему сообщению
+    scrollToBottom(true);
+    
+    // Прокручиваем страницу вверх, чтобы header был виден
+    window.scrollTo(0, 0);
   }, 100);
 };
 
 const onBlur = () => {
   isInputFocused.value = false;
-  document.body.style.height = '';
-  // После скрытия клавиатуры снова прокручиваем к последнему сообщению
-  setTimeout(() => {
-    scrollToBottom();
-  }, 100);
 };
 
+function sendMessage() {
+  if (messageText.value.trim() !== '') {
+    messages.value.push({ text: messageText.value, sender: 'me' });
+    messageText.value = '';
+    scrollToBottom(true);
+  }
+}
+
 onMounted(() => {
-  scrollToBottom();
+  scrollToBottom(true);
   
-  // Prevent bounce effect
-  document.documentElement.style.overflow = 'hidden';
+  // Предотвращаем скролл на iOS
   document.body.style.overflow = 'hidden';
-  document.addEventListener('touchmove', (e) => {
-    if (e.touches.length > 1) return;
-    e.preventDefault();
-  }, { passive: false });
+  document.documentElement.style.overflow = 'hidden';
 });
 
 onBeforeUnmount(() => {
-  document.documentElement.style.overflow = '';
   document.body.style.overflow = '';
+  document.documentElement.style.overflow = '';
 });
 </script>
 
@@ -134,7 +166,7 @@ html, body {
 
 <style scoped>
 .chat-view {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
@@ -142,12 +174,13 @@ html, body {
   display: flex;
   flex-direction: column;
   background: white;
-  height: 100%;
+  height: 100vh;
   overflow: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 .header {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
@@ -172,16 +205,18 @@ html, body {
 }
 
 .messages {
-  position: absolute;
-  top: 56px; /* header height */
+  position: fixed;
+  top: 56px;
   left: 0;
   right: 0;
-  bottom: 56px; /* input-area height */
+  bottom: 56px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   background: #e5e5ea;
   padding: 10px;
   z-index: 1;
+  height: calc(100vh - 112px);
+  padding-bottom: 10px;
 }
 
 .message {
@@ -219,32 +254,44 @@ html, body {
 }
 
 .input-area {
-  position: absolute;
+  position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
   background: #f6f6f6;
-  border-top: 1px solid #ccc;
-  padding: 0.5rem;
+  border-top: 1px solid #e0e0e0;
+  padding: 8px 16px;
   z-index: 10;
+  min-height: 56px;
+}
+
+.keyboard-visible {
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
 }
 
 .input-form {
   display: flex;
   gap: 8px;
+  align-items: center;
+  background: white;
+  border-radius: 22px;
+  padding: 6px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .message-input {
   flex: 1;
-  --padding-start: 12px;
-  --padding-end: 12px;
+  --padding-start: 10px;
+  --padding-end: 10px;
   --padding-top: 8px;
   --padding-bottom: 8px;
-  --background: #fff;
-  --border-radius: 0.5rem;
-  --border-width: 1px;
-  --border-color: #ccc;
-  text-align: left;
+  --background: transparent;
+  --border-radius: 0;
+  --border-width: 0;
+  --placeholder-color: #8e8e93;
+  font-size: 16px;
+  margin: 0;
 }
 
 ion-input {
@@ -265,11 +312,15 @@ ion-input {
 .send-button {
   background: #0088cc;
   border: none;
-  color: #fff;
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.5rem;
-  font-weight: 500;
-  white-space: nowrap;
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-size: 15px;
   -webkit-appearance: none;
   -webkit-tap-highlight-color: transparent;
 }
@@ -281,7 +332,27 @@ ion-input {
 @supports (-webkit-touch-callout: none) {
   .chat-view {
     height: -webkit-fill-available;
-    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .messages {
+    height: calc(100% - 112px);
+  }
+  
+  .input-area {
+    padding-bottom: calc(8px + env(safe-area-inset-bottom));
+  }
+}
+
+/* Обновляем стили для iOS */
+@media (max-width: 768px) {
+  @supports (-webkit-touch-callout: none) {
+    .messages {
+      bottom: calc(56px + env(safe-area-inset-bottom));
+    }
+    
+    .input-area {
+      min-height: calc(56px + env(safe-area-inset-bottom));
+    }
   }
 }
 </style>
