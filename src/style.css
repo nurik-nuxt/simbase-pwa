@@ -11,6 +11,7 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --vh: 1vh;
 }
 
 a {
@@ -103,5 +104,4 @@ button:focus-visible {
 
 ion-content {
   --overflow: hidden;
-  --padding-bottom: var(--ion-safe-area-bottom, 0px);
 }

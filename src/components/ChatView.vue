@@ -1,271 +1,264 @@
 <template>
-  <!-- Высота контейнера динамически задаётся через style -->
-  <div class="chat-container" :style="{ height: chatContainerHeight }">
-    <!-- Шапка чата -->
-    <header class="chat-header">
-      <button class="back-button" @click="onBack">
-        <span>←</span>
-      </button>
-      <div class="chat-user-info">
-        <img class="user-avatar" src="../assets/men.png" alt="User Avatar" />
-        <span class="user-name">{{ name }}</span>
-      </div>
-      <div class="chat-actions">
-        <button>...</button>
-      </div>
-    </header>
+  <div class="chat-view">
+    <div class="header">
+      <img :src="avatar" alt="Avatar" class="avatar" />
+      <span class="name">{{ name }}</span>
+    </div>
 
-    <!-- Список сообщений -->
-    <main class="chat-messages" ref="messagesRef">
+    <div class="messages" ref="messagesContainer">
       <div
-          v-for="(msg, i) in messages"
-          :key="i"
-          class="message"
-          :class="msg.from"
+        v-for="(msg, index) in messages"
+        :key="index"
+        class="message"
+        :class="{ incoming: msg.sender === 'them', outgoing: msg.sender === 'me' }"
       >
-        <p class="message-text">{{ msg.text }}</p>
-        <span class="message-time">{{ msg.time }}</span>
+        <div class="bubble">{{ msg.text }}</div>
       </div>
-    </main>
+    </div>
 
-    <!-- Поле ввода нового сообщения -->
-    <footer class="chat-footer">
-      <input
-          v-model="newMessage"
-          class="chat-input"
-          type="text"
-          placeholder="Сообщение"
-          @keyup.enter="sendMessage"
-          @focus="handleFocus"
-          @blur="handleBlur"
-      />
-      <button class="send-button" @click="sendMessage">
-        Отправить
-      </button>
-    </footer>
+    <div class="input-area">
+      <form @submit.prevent="sendMessage" class="input-form">
+        <ion-input
+          ref="inputField"
+          v-model="messageText"
+          placeholder="Напишите сообщение..."
+          class="message-input"
+          :class="{ 'input-focused': isInputFocused }"
+          @ionFocus="onFocus"
+          @ionBlur="onBlur"
+        />
+        <button type="submit" class="send-button">
+          Отправить
+        </button>
+      </form>
+    </div>
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { defineProps, defineEmits } from 'vue';
+<script setup>
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 
-type FromType = 'message-from-me' | 'message-from-them';
-
-interface ChatMessage {
-  text: string;
-  time: string;
-  from: FromType;
-}
-
-const props = defineProps<{
-  name: string;
-  avatar: string;
-}>();
-
-const emits = defineEmits<{ (e: 'back'): void }>();
-
-const messages = ref<ChatMessage[]>([
-  {
-    text: 'Привет! Как дела?',
-    time: '14:30',
-    from: 'message-from-them',
-  },
-  {
-    text: 'Привет! Всё отлично, спасибо!',
-    time: '14:32',
-    from: 'message-from-me',
-  },
-]);
-
-const newMessage = ref('');
-const messagesRef = ref<HTMLElement | null>(null);
-// Значение высоты контейнера — изначально полная высота окна
-const chatContainerHeight = ref('100vh');
-
-onMounted(() => {
-  // Автопрокрутка к последнему сообщению при инициализации
-  if (messagesRef.value) {
-    messagesRef.value.scrollTop = messagesRef.value.scrollHeight;
-  }
+const props = defineProps({
+  name: { type: String, default: 'Собеседник' },
+  avatar: { type: String, default: 'https://via.placeholder.com/40' },
 });
 
-// Отправка сообщения и автопрокрутка вниз
+const messages = ref([
+  { text: 'Привет!', sender: 'them' },
+  { text: 'Как дела?', sender: 'them' },
+  { text: 'Всё отлично, а у тебя?', sender: 'me' },
+]);
+
+const messageText = ref('');
+const messagesContainer = ref(null);
+const inputField = ref(null);
+const isInputFocused = ref(false);
+
+function scrollToBottom() {
+  if (messagesContainer.value) {
+    messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+  }
+}
+
 function sendMessage() {
-  if (!newMessage.value.trim()) return;
-  const msg: ChatMessage = {
-    text: newMessage.value,
-    time: new Date().toLocaleTimeString().slice(0, 5),
-    from: 'message-from-me',
-  };
-  messages.value.push(msg);
-  newMessage.value = '';
+  if (messageText.value.trim() !== '') {
+    messages.value.push({ text: messageText.value, sender: 'me' });
+    messageText.value = '';
+    setTimeout(scrollToBottom, 10);
+  }
+}
 
-  // Прокручиваем список сообщений вниз
+const onFocus = () => {
+  isInputFocused.value = true;
   setTimeout(() => {
-    if (messagesRef.value) {
-      messagesRef.value.scrollTop = messagesRef.value.scrollHeight;
-    }
-  }, 0);
-}
+    scrollToBottom();
+    window.scrollTo(0, 0);
+  }, 100);
+};
 
-function onBack() {
-  emits('back');
-}
+const onBlur = () => {
+  isInputFocused.value = false;
+};
 
-/**
- * При фокусе (открытии клавиатуры) фиксируем высоту контейнера,
- * чтобы избежать перерасчёта 100vh и «прыгания» контента.
- */
-function handleFocus() {
-  chatContainerHeight.value = window.innerHeight + 'px';
-}
+onMounted(() => {
+  scrollToBottom();
+  
+  // Prevent bounce effect
+  document.documentElement.style.overflow = 'hidden';
+  document.body.style.overflow = 'hidden';
+  document.addEventListener('touchmove', (e) => {
+    if (e.touches.length > 1) return;
+    e.preventDefault();
+  }, { passive: false });
+});
 
-/**
- * После потери фокуса возвращаем высоту контейнера обратно.
- */
-function handleBlur() {
-  chatContainerHeight.value = '100vh';
-}
+onBeforeUnmount(() => {
+  document.documentElement.style.overflow = '';
+  document.body.style.overflow = '';
+});
 </script>
 
+<style>
+html, body {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: none;
+}
+</style>
+
 <style scoped>
-.chat-container {
+.chat-view {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   flex-direction: column;
-  position: relative;
+  background: white;
+  height: 100%;
   overflow: hidden;
 }
 
-/* Шапка чата */
-.chat-header {
+.header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
   display: flex;
   align-items: center;
   padding: 0.5rem;
+  background: #f6f6f6;
   border-bottom: 1px solid #ccc;
-  background-color: #fff;
-  position: sticky;
-  top: 0;
   z-index: 10;
 }
 
-.back-button {
-  background: none;
-  border: none;
-  font-size: 1rem;
-  cursor: pointer;
-  color: #1a1a1a;
-}
-
-.chat-user-info {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-left: 1rem;
-}
-
-.user-avatar {
+.avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  object-fit: cover;
+  margin-right: 0.5rem;
 }
 
-.user-name {
-  font-weight: 600;
+.name {
+  font-weight: bold;
 }
 
-.chat-actions {
-  margin-left: auto;
-}
-
-.chat-actions button {
-  background: none;
-  border: none;
-  font-size: 1.2rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-}
-
-/* Основная часть – список сообщений */
-.chat-messages {
-  flex: 1;
+.messages {
+  position: absolute;
+  top: 56px; /* header height */
+  left: 0;
+  right: 0;
+  bottom: 56px; /* input-area height */
   overflow-y: auto;
-  padding: 1rem;
   -webkit-overflow-scrolling: touch;
-  background-color: #f2f2f2;
-  /* Резервируем место для фиксированного футера */
-  margin-bottom: 60px;
+  background: #e5e5ea;
+  padding: 10px;
+  z-index: 1;
 }
 
 .message {
+  display: flex;
+  margin: 0.25rem 0;
+}
+
+.message.incoming {
+  justify-content: flex-start;
+}
+
+.message.outgoing {
+  justify-content: flex-end;
+}
+
+.bubble {
   max-width: 70%;
-  margin: 0.5rem 0;
-  padding: 0.5rem;
-  border-radius: 10px;
-  font-size: 0.9rem;
-  word-break: break-word;
+  padding: 0.5rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  word-wrap: break-word;
 }
 
-.message-from-me {
-  margin-left: auto;
-  background-color: #dcf8c6;
+.message.incoming .bubble {
+  background: #fff;
+  color: #000;
+  border-top-left-radius: 0.3rem;
 }
 
-.message-from-them {
-  margin-right: auto;
-  background-color: #fff;
+.message.outgoing .bubble {
+  background: #0088cc;
+  color: #fff;
+  border-top-right-radius: 0.3rem;
 }
 
-.message-text {
-  margin: 0;
-  text-align: justify;
-}
-
-.message-time {
-  display: block;
-  font-size: 0.7rem;
-  color: #666;
-  margin-top: 0.25rem;
-  text-align: right;
-}
-
-/* Футер – поле ввода */
-.chat-footer {
-  position: fixed;
-  bottom: 0;
+.input-area {
+  position: absolute;
   left: 0;
   right: 0;
-  display: flex;
-  align-items: center;
+  bottom: 0;
+  background: #f6f6f6;
   border-top: 1px solid #ccc;
-  background-color: #fff;
   padding: 0.5rem;
-  padding-bottom: calc(0.5rem + env(safe-area-inset-bottom)); /* учёт safe-area */
   z-index: 10;
 }
 
-.chat-input {
+.input-form {
+  display: flex;
+  gap: 8px;
+}
+
+.message-input {
   flex: 1;
-  border: 1px solid #ccc;
-  border-radius: 20px;
-  padding: 0.5rem 1rem;
-  margin-right: 0.5rem;
-  font-size: 1rem;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+  --background: #fff;
+  --border-radius: 0.5rem;
+  --border-width: 1px;
+  --border-color: #ccc;
+  text-align: left;
+}
+
+ion-input {
+  text-align: left !important;
+  --text-align: left !important;
+}
+
+.message-input::part(input) {
+  text-align: left !important;
+  margin: 0;
+  padding: 0;
+}
+
+.input-focused {
+  --padding-bottom: env(safe-area-inset-bottom);
 }
 
 .send-button {
-  background-color: #0088cc;
+  background: #0088cc;
   border: none;
   color: #fff;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 1rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  white-space: nowrap;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.send-button:hover {
-  opacity: 0.9;
+.send-button:active {
+  opacity: 0.8;
+}
+
+@supports (-webkit-touch-callout: none) {
+  .chat-view {
+    height: -webkit-fill-available;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }
 </style>

@@ -17,8 +17,8 @@ export default defineConfig({
           short_name: 'Simbase',
           start_url: '/',
           display: 'standalone',
-          background_color: '#ffffff',
-          theme_color: '#ffffff',
+          background_color: '#f6f6f6',
+          theme_color: '#f6f6f6',
           icons: [
             {
               src: '/logo.png',

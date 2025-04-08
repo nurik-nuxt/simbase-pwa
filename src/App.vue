@@ -20,22 +20,18 @@ function doRefresh(event: CustomEvent) {
     <HeaderBar />
     <ion-content :fullscreen="true">
       <!-- Компонент pull-to-refresh -->
-      <ion-refresher slot="fixed" @ionRefresh="doRefresh">
-        <ion-refresher-content
-            pullingIcon="arrow-dropdown"
-            refreshingSpinner="crescent"
-        />
-      </ion-refresher>
+<!--      <ion-refresher slot="fixed" @ionRefresh="doRefresh">-->
+<!--        <ion-refresher-content-->
+<!--            pullingIcon="arrow-dropdown"-->
+<!--            refreshingSpinner="crescent"-->
+<!--        />-->
+<!--      </ion-refresher>-->
       <Swiper/>
     </ion-content>
   </ion-page>
 </template>
 
 <style scoped>
-ion-content {
-  --padding-bottom: env(safe-area-inset-bottom, 0px);
-  --offset-bottom: env(safe-area-inset-bottom, 0px);
-}
 swiper {
   padding-bottom: env(safe-area-inset-bottom, 0px);
   box-sizing: border-box;

@@ -62,7 +62,6 @@ function handleTouchMove(e: TouchEvent) {
 
   const currentX = e.touches[0].clientX;
   const currentY = e.touches[0].clientY;
-  const deltaX = currentX - startX;
   const deltaY = currentY - startY;
 
   // Определяем, насколько элемент прокручен

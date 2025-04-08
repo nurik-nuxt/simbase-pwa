@@ -1,5 +1,4 @@
 <template>
-  <!-- Если чат не выбран – показываем список, иначе – детальный чат -->
   <ChatList
       v-if="!selectedChatId"
       :chats="chatList"
@@ -18,7 +17,6 @@ import { ref, computed } from 'vue';
 import ChatList from './ChatList.vue';
 import ChatView from './ChatView.vue';
 
-// Тип для элемента списка чатов
 interface ChatListItem {
   id: number;
   name: string;
@@ -27,7 +25,6 @@ interface ChatListItem {
   lastTime: string;
 }
 
-// Исходный список чатов (можно загрузить с сервера и т. д.)
 const chatList = ref<ChatListItem[]>([
   {
     id: 1,
@@ -227,25 +224,17 @@ const chatList = ref<ChatListItem[]>([
   },
 ]);
 
-// Идентификатор выбранного чата
 const selectedChatId = ref<number | null>(null);
 
-// При клике на чат в списке:
 function selectChat(chatId: number) {
   selectedChatId.value = chatId;
 }
 
-// При нажатии "назад" в детальном экране:
 function unselectChat() {
   selectedChatId.value = null;
 }
 
-// Текущий выбранный чат
 const selectedChat = computed(() =>
     chatList.value.find((item) => item.id === selectedChatId.value)
 );
 </script>
-
-<style scoped>
-/* При желании любые стили для контейнера */
-</style>
