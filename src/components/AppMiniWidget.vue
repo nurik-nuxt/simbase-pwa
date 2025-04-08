@@ -52,6 +52,7 @@ onBeforeUnmount(() => {
         class="app-mini-widget"
         @wheel="handleWheel"
         @touchmove="handleTouchMove"
+        @touchend="handleTouchMove"
     >
       <MiniWidget value="300" />
       <MiniWidget :value="20" footer-value="Пользователи" />
