@@ -262,6 +262,7 @@ html, body {
   right: 0;
   bottom: 56px;
   overflow-y: auto;
+  touch-action: pan-y;
   -webkit-overflow-scrolling: touch;
   background: #e5e5ea;
   padding: 10px;
