@@ -92,7 +92,6 @@ button:focus-visible {
   justify-content: center;
   align-items: center;
   touch-action: auto; /* Allow default touch behavior in slides */
-  overflow: auto;
 }
 
 .swiper-slide img {

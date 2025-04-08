@@ -2,7 +2,7 @@
   <div class="swiper-wrapper">
     <swiper
         class="mySwiper"
-        :initial-slide="0"
+        :initial-slide="1"
         :nested="true"
         :touch-move-stop-propagation="true"
         :touch-ratio="0.5"
