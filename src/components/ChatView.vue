@@ -224,6 +224,7 @@ function onBack() {
 
 .message-text {
   margin: 0;
+  text-align: justify;
 }
 
 .message-time {

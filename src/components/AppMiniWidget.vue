@@ -4,7 +4,6 @@ import MiniWidget from "./MiniWidget.vue";
 
 const container = ref<HTMLElement | null>(null);
 
-
 function scrollLeft() {
   container.value?.scrollBy({
     left: -100,
