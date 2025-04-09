@@ -31,7 +31,7 @@
 
 <script lang="ts">
 import { IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonButton } from '@ionic/vue';
-import { defineComponent, ref, onMounted } from 'vue';
+import { defineComponent, ref, onMounted, onUnmounted } from 'vue';
 
 export default defineComponent({
   components: { IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonButton },
@@ -40,6 +40,9 @@ export default defineComponent({
     const isInstallable = ref(false);
     // Реф для хранения данных геолокации
     const location = ref<{latitude: number, longitude: number} | null>(null);
+
+    // Идентификатор наблюдения за геолокацией, чтобы остановить наблюдение при размонтировании компонента.
+    let watchId: number | null = null;
 
     onMounted(() => {
       // Обработка события для установки приложения
@@ -53,9 +56,9 @@ export default defineComponent({
         isInstallable.value = false;
       });
 
-      // Запрос геолокации
+      // Запрос геолокации с отслеживанием изменений
       if ('geolocation' in navigator) {
-        navigator.geolocation.getCurrentPosition(
+        watchId = navigator.geolocation.watchPosition(
             (position) => {
               location.value = {
                 latitude: position.coords.latitude,
@@ -65,11 +68,24 @@ export default defineComponent({
             (error) => {
               console.error('Ошибка определения местоположения:', error);
               location.value = null;
+            },
+            {
+              // Опциональные настройки для более частого обновления:
+              enableHighAccuracy: true,
+              maximumAge: 0,
+              timeout: 5000
             }
         );
       } else {
         console.error('Геолокация не поддерживается браузером');
         location.value = null;
+      }
+    });
+
+    // Очистка наблюдения за геолокацией при размонтировании компонента
+    onUnmounted(() => {
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
       }
     });
 
