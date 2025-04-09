@@ -13,6 +13,7 @@
     "@capacitor/cli": "^7.2.0",
     "@capacitor/core": "^7.2.0",
     "@ionic/vue": "^8.5.3",
+    "@vueuse/core": "^13.1.0",
     "chart.js": "^4.4.8",
     "sharp": "^0.34.1",
     "swiper": "^10.0.0",

@@ -27,11 +27,22 @@
     </p>
     <p v-else>Местоположение недоступно или не поддерживается.</p>
   </div>
+
+  <!-- Блок для отображения информации о батарее -->
+  <div>
+    <h3>Информация о батарее:</h3>
+    <p v-if="isSupported">
+      Уровень заряда: {{ Math.round(level * 100) }}%,
+      {{ charging ? 'Заряжается' : 'Не заряжается' }}
+    </p>
+    <p v-else>Информация о батарее недоступна.</p>
+  </div>
 </template>
 
 <script lang="ts">
 import { IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonButton } from '@ionic/vue';
 import { defineComponent, ref, onMounted, onUnmounted } from 'vue';
+import { useBattery } from '@vueuse/core';
 
 export default defineComponent({
   components: { IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonButton },
@@ -39,10 +50,11 @@ export default defineComponent({
     const deferredPrompt = ref<any>(null);
     const isInstallable = ref(false);
     // Реф для хранения данных геолокации
-    const location = ref<{latitude: number, longitude: number} | null>(null);
-
-    // Идентификатор наблюдения за геолокацией, чтобы остановить наблюдение при размонтировании компонента.
+    const location = ref<{ latitude: number, longitude: number } | null>(null);
     let watchId: number | null = null;
+
+    // Получаем информацию о батарее через useBattery
+    const { level, charging, isSupported } = useBattery();
 
     onMounted(() => {
       // Обработка события для установки приложения
@@ -51,7 +63,6 @@ export default defineComponent({
         deferredPrompt.value = e;
         isInstallable.value = true;
       });
-
       window.addEventListener('appinstalled', () => {
         isInstallable.value = false;
       });
@@ -70,7 +81,6 @@ export default defineComponent({
               location.value = null;
             },
             {
-              // Опциональные настройки для более частого обновления:
               enableHighAccuracy: true,
               maximumAge: 0,
               timeout: 5000
@@ -82,7 +92,7 @@ export default defineComponent({
       }
     });
 
-    // Очистка наблюдения за геолокацией при размонтировании компонента
+    // Остановка наблюдения за геолокацией при размонтировании компонента
     onUnmounted(() => {
       if (watchId !== null) {
         navigator.geolocation.clearWatch(watchId);
@@ -91,10 +101,8 @@ export default defineComponent({
 
     const installApp = async () => {
       if (!deferredPrompt.value) return;
-
       deferredPrompt.value.prompt();
       const { outcome } = await deferredPrompt.value.userChoice;
-
       if (outcome === 'accepted') {
         deferredPrompt.value = null;
         isInstallable.value = false;
@@ -104,7 +112,10 @@ export default defineComponent({
     return {
       isInstallable,
       installApp,
-      location
+      location,
+      level,
+      charging,
+      isSupported
     };
   }
 });
