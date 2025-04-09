@@ -136,5 +136,6 @@ export default defineComponent({
 .main-page {
   height: 500px;
   overflow-y: auto;
+  touch-action: pan-y;
 }
 </style>
