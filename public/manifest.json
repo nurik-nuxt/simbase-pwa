@@ -1,7 +1,7 @@
 {
-  "name": "Simbase Chat",
+  "name": "Simbase",
   "short_name": "Simbase",
-  "description": "Simbase Chat Application",
+  "description": "Simbase Application",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
