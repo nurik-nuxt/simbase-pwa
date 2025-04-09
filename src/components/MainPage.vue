@@ -134,7 +134,7 @@ export default defineComponent({
 
 <style scoped>
 .main-page {
-  height: calc(100vh - 56px);
+  height: 500px;
   overflow-y: auto;
 }
 </style>
