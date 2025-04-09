@@ -37,24 +37,32 @@
     </p>
     <p v-else>Информация о батарее недоступна.</p>
   </div>
+
+  <!-- Блок для отображения статуса подключения -->
+  <div>
+    <h3>Статус подключения к интернету:</h3>
+    <p>{{ online ? 'Онлайн' : 'Оффлайн' }}</p>
+  </div>
 </template>
 
 <script lang="ts">
 import { IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonButton } from '@ionic/vue';
 import { defineComponent, ref, onMounted, onUnmounted } from 'vue';
-import { useBattery } from '@vueuse/core';
+import { useBattery, useOnline } from '@vueuse/core';
 
 export default defineComponent({
   components: { IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonButton },
   setup() {
     const deferredPrompt = ref<any>(null);
     const isInstallable = ref(false);
-    // Реф для хранения данных геолокации
     const location = ref<{ latitude: number, longitude: number } | null>(null);
     let watchId: number | null = null;
 
     // Получаем информацию о батарее через useBattery
     const { level, charging, isSupported } = useBattery();
+
+    // Получаем статус подключения к сети
+    const online = useOnline();
 
     onMounted(() => {
       // Обработка события для установки приложения
@@ -92,7 +100,7 @@ export default defineComponent({
       }
     });
 
-    // Остановка наблюдения за геолокацией при размонтировании компонента
+    // Очистка наблюдения за геолокацией при размонтировании компонента
     onUnmounted(() => {
       if (watchId !== null) {
         navigator.geolocation.clearWatch(watchId);
@@ -115,7 +123,8 @@ export default defineComponent({
       location,
       level,
       charging,
-      isSupported
+      isSupported,
+      online
     };
   }
 });
