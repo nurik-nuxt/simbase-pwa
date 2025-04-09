@@ -1,47 +1,49 @@
 <template>
-  <ion-card>
-    <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/card-media.png" />
-    <ion-card-header>
-      <ion-card-title>Главная страница</ion-card-title>
-      <ion-card-subtitle>Card Subtitle</ion-card-subtitle>
-    </ion-card-header>
-    <ion-card-content>
-      Here's a small text description for the card content. Nothing more, nothing less.
-    </ion-card-content>
-  </ion-card>
+  <div class="main-page">
+    <ion-card>
+      <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/card-media.png" />
+      <ion-card-header>
+        <ion-card-title>Главная страница</ion-card-title>
+        <ion-card-subtitle>Card Subtitle</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        Here's a small text description for the card content. Nothing more, nothing less.
+      </ion-card-content>
+    </ion-card>
 
-  <div>
-    <ion-button
-        v-if="isInstallable"
-        expand="block"
-        @click="installApp"
-    >Установить приложение
-    </ion-button>
-  </div>
+    <div>
+      <ion-button
+          v-if="isInstallable"
+          expand="block"
+          @click="installApp"
+      >Установить приложение
+      </ion-button>
+    </div>
 
-  <!-- Блок для отображения геолокации -->
-  <div>
-    <h3>Ваше местоположение:</h3>
-    <p v-if="location">
-      Latitude: {{ location.latitude }}, Longitude: {{ location.longitude }}
-    </p>
-    <p v-else>Местоположение недоступно или не поддерживается.</p>
-  </div>
+    <!-- Блок для отображения геолокации -->
+    <div>
+      <h3>Ваше местоположение:</h3>
+      <p v-if="location">
+        Latitude: {{ location.latitude }}, Longitude: {{ location.longitude }}
+      </p>
+      <p v-else>Местоположение недоступно или не поддерживается.</p>
+    </div>
 
-  <!-- Блок для отображения информации о батарее -->
-  <div>
-    <h3>Информация о батарее:</h3>
-    <p v-if="isSupported">
-      Уровень заряда: {{ Math.round(level * 100) }}%,
-      {{ charging ? 'Заряжается' : 'Не заряжается' }}
-    </p>
-    <p v-else>Информация о батарее недоступна.</p>
-  </div>
+    <!-- Блок для отображения информации о батарее -->
+    <div>
+      <h3>Информация о батарее:</h3>
+      <p v-if="isSupported">
+        Уровень заряда: {{ Math.round(level * 100) }}%,
+        {{ charging ? 'Заряжается' : 'Не заряжается' }}
+      </p>
+      <p v-else>Информация о батарее недоступна.</p>
+    </div>
 
-  <!-- Блок для отображения статуса подключения -->
-  <div>
-    <h3>Статус подключения к интернету:</h3>
-    <p>{{ online ? 'Онлайн' : 'Оффлайн' }}</p>
+    <!-- Блок для отображения статуса подключения -->
+    <div>
+      <h3>Статус подключения к интернету:</h3>
+      <p>{{ online ? 'Онлайн' : 'Оффлайн' }}</p>
+    </div>
   </div>
 </template>
 
@@ -129,3 +131,10 @@ export default defineComponent({
   }
 });
 </script>
+
+<style scoped>
+.main-page {
+  height: calc(100vh - 56px);
+  overflow-y: auto;
+}
+</style>
