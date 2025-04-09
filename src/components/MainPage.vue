@@ -1,49 +1,53 @@
 <template>
-  <div class="main-page">
-    <ion-card>
-      <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/card-media.png" />
-      <ion-card-header>
-        <ion-card-title>Главная страница</ion-card-title>
-        <ion-card-subtitle>Card Subtitle</ion-card-subtitle>
-      </ion-card-header>
-      <ion-card-content>
-        Here's a small text description for the card content. Nothing more, nothing less.
-      </ion-card-content>
-    </ion-card>
+  <ion-card>
+    <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/card-media.png" />
+    <ion-card-header>
+      <ion-card-title>Главная страница</ion-card-title>
+      <ion-card-subtitle>Card Subtitle</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      Here's a small text description for the card content. Nothing more, nothing less.
+    </ion-card-content>
+  </ion-card>
 
-    <div>
-      <ion-button
-          v-if="isInstallable"
-          expand="block"
-          @click="installApp"
-      >Установить приложение
-      </ion-button>
-    </div>
+  <div>
+    <ion-button
+        v-if="isInstallable"
+        expand="block"
+        @click="installApp"
+    >Установить приложение
+    </ion-button>
+  </div>
 
-    <!-- Блок для отображения геолокации -->
-    <div>
-      <h3>Ваше местоположение:</h3>
-      <p v-if="location">
-        Latitude: {{ location.latitude }}, Longitude: {{ location.longitude }}
-      </p>
-      <p v-else>Местоположение недоступно или не поддерживается.</p>
-    </div>
+  <!-- Блок для отображения геолокации -->
+  <div>
+    <h3>Ваше местоположение:</h3>
+    <p v-if="location">
+      X (Latitude): {{ location.latitude }},
+      Y (Longitude): {{ location.longitude }},
+      Z (Altitude):
+      <span v-if="location.altitude !== null && location.altitude !== undefined">
+        {{ location.altitude }}
+      </span>
+      <span v-else>не доступно</span>
+    </p>
+    <p v-else>Местоположение недоступно или не поддерживается.</p>
+  </div>
 
-    <!-- Блок для отображения информации о батарее -->
-    <div>
-      <h3>Информация о батарее:</h3>
-      <p v-if="isSupported">
-        Уровень заряда: {{ Math.round(level * 100) }}%,
-        {{ charging ? 'Заряжается' : 'Не заряжается' }}
-      </p>
-      <p v-else>Информация о батарее недоступна.</p>
-    </div>
+  <!-- Блок для отображения информации о батарее -->
+  <div>
+    <h3>Информация о батарее:</h3>
+    <p v-if="isSupported">
+      Уровень заряда: {{ Math.round(level * 100) }}%,
+      {{ charging ? 'Заряжается' : 'Не заряжается' }}
+    </p>
+    <p v-else>Информация о батарее недоступна.</p>
+  </div>
 
-    <!-- Блок для отображения статуса подключения -->
-    <div>
-      <h3>Статус подключения к интернету:</h3>
-      <p>{{ online ? 'Онлайн' : 'Оффлайн' }}</p>
-    </div>
+  <!-- Блок для отображения статуса подключения -->
+  <div>
+    <h3>Статус подключения к интернету:</h3>
+    <p>{{ online ? 'Онлайн' : 'Оффлайн' }}</p>
   </div>
 </template>
 
@@ -57,17 +61,18 @@ export default defineComponent({
   setup() {
     const deferredPrompt = ref<any>(null);
     const isInstallable = ref(false);
-    const location = ref<{ latitude: number, longitude: number } | null>(null);
+    // Реф для хранения геоданных (latitude, longitude и altitude)
+    const location = ref<{ latitude: number, longitude: number, altitude: number | null } | null>(null);
     let watchId: number | null = null;
 
-    // Получаем информацию о батарее через useBattery
+    // Получаем данные о батарее
     const { level, charging, isSupported } = useBattery();
 
     // Получаем статус подключения к сети
     const online = useOnline();
 
     onMounted(() => {
-      // Обработка события для установки приложения
+      // Обработка события установки приложения
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt.value = e;
@@ -83,7 +88,8 @@ export default defineComponent({
             (position) => {
               location.value = {
                 latitude: position.coords.latitude,
-                longitude: position.coords.longitude
+                longitude: position.coords.longitude,
+                altitude: position.coords.altitude // Может быть null, если высота недоступна
               };
             },
             (error) => {
@@ -131,11 +137,3 @@ export default defineComponent({
   }
 });
 </script>
-
-<style scoped>
-.main-page {
-  height: 500px;
-  overflow-y: auto;
-  touch-action: pan-y;
-}
-</style>
