@@ -1,0 +1,23 @@
+@use 'sass:math';
+
+@function to-fixed($float, $digits: 3) {
+  $sass-precision: 5;
+
+  @if $digits > $sass-precision {
+    @warn "Sass sets default precision to #{$sass-precision} digits, and there is no way to change that for now."
+      + "The returned number will have #{$sass-precision} digits, even if you asked for `#{$digits}`."
+      + "See https://github.com/sass/sass/issues/1122 for further informations.";
+  }
+
+  $pow: pow(10, $digits);
+  @return math.div(round($float * $pow), $pow);
+}
+
+@function stripUnit($value) {
+  @return math.div($value, ($value * 0 + 1));
+}
+
+@function to-rem($pxValue) {
+  $result: math.div(stripUnit($pxValue), stripUnit($font-size-base));
+  @return #{to-fixed($result)}rem;
+}

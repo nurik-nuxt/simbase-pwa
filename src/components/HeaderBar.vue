@@ -29,9 +29,9 @@ import { ellipsisVertical } from 'ionicons/icons'
 
 <style scoped>
 ion-header {
-  height: 56px;
+  height: var(--app-header-height);
 }
 ion-toolbar {
-  --min-height: 56px;
+  --min-height: var(--app-header-height);
 }
 </style>
